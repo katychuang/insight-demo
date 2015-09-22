@@ -1,0 +1,48 @@
+<html>
+<head>
+<link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+<link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" type="text/css" />
+<link rel="icon" type="image/x-icon" href="https://assets-cdn.github.com/favicon.ico">
+<style>
+#example2b { min-height: 255px; }
+</style>
+</head>
+<body>
+	<div id="MyInput">
+            <div class="header">
+		<h1>Create simulation</h2>
+		<h3>Define Test Parameters</h3>
+		<p><label>Volume:</label> <input type="text" /> </p>
+		<p><label>Frequency:</label> <input type="text"/></p>
+            </div>
+		<center>
+		<button onclick="start()" style="    -webkit-appearance: button;padding: 6px 12px;border: 1px solid transparent;    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;background: #5cb85c; color: white; border-radius: 8px;">Start Test</button>
+		</center>
+            <div class="footer">
+                <p>Code on <a href="#">Github</a>. Designed by <a href="http://katychuang.com">Dr. Kat</a></p>
+            </div>
+        </div>
+        <div id="MyOutput">
+		<div id="example2b"></div>
+	</div>
+        <div style="clear:both"></div>
+<script src="{{ url_for('static', filename='js/d3.v2.js') }}"></script>
+<script src="{{ url_for('static', filename='js/cubism.v1.js') }}"></script>
+<script src="{{ url_for('static', filename='js/highlight.min.js') }}"></script>
+<script>
+function start(){
+var myObj = document.getElementById("MyOutput");
+var newNode = document.createElement("p");
+ newNode.appendChild(document.createTextNode("results here"));
+ myObj.appendChild(newNode);
+
+}
+</script>
+{% include "scripts.html" %}
+</body>
+</html>
