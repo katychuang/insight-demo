@@ -55,3 +55,9 @@ docs/_build/
 
 # PyBuilder
 target/
+
+bin
+settings.py
+pip-selfcheck.json
+*.swp
+local*
