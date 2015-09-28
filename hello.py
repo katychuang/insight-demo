@@ -1,5 +1,8 @@
 from flask import Flask
 from flask import Flask, render_template
+import os
+
+from settings import *
 
 app = Flask(__name__)
 

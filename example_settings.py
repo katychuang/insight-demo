@@ -1,0 +1,3 @@
+MASTER_SPARK = "" 
+MASTER_PUBLIC_IP = ""
+
