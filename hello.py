@@ -20,9 +20,22 @@ def case(id):
 def test(id):
     return id
 
+@app.route("/demo")
 @app.route("/test")
 def create_test():
-	return render_template("layout.html")
+	return render_template("demo.html")
+
+@app.route("/demo/time")
+def api_one():
+	return "time"
+
+@app.route("/api/count")
+def api_count(topic):
+    # open topic_testId
+    # count number of lines in the file
+    return "count"
+
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)

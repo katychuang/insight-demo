@@ -57,3 +57,22 @@ label{
     box-sizing: border-box;
     background-color: #fff;
 }
+
+#example2b {
+  min-height: 255px;
+}
+
+button.start {
+  -webkit-appearance: button;
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  background: #5cb85c; 
+  color: white; 
+  border-radius: 8px;
+}
