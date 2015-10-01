@@ -1,10 +1,22 @@
-from flask import Flask
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify, request, Response
+from flask import make_response
+from json import dumps
 import os
-
+import settings
 from settings import *
+import subprocess
+from cassandra.cluster import Cluster
+from datetime import datetime
+import json
+from operator import itemgetter
 
 app = Flask(__name__)
+
+# Connect to Cassandra
+cluster = Cluster(['54.164.65.18'])
+session = cluster.connect('spark_pond')
+session.default_timeout = 30 # 30 seconds
+
 
 @app.route("/")
 @app.route('/index')
@@ -44,12 +56,39 @@ def test(id):
 def create_test():
 	return render_template("demo.html")
 
-@app.route("/demo/time")
-def api_one():
-	return "time"
+@app.route("/api/time/<topic>")
+def api_one(topic):
+    # 3 seconds batch interval
+    stmt = "SELECT testid, time1, delta FROM spark_1m limit 5000"
+    response = session.execute(stmt)
+    print type(response)
+    response.sort(key=itemgetter(1))
+    tmp_point = []
+    for ping in response:
+        time = ping.time1
+        delta = ping.delta
+        tmp_point.append([time,delta])
+         
+    return make_response(dumps(tmp_point))
 
-@app.route("/api/count")
-def api_count(topic):
+@app.route("/api/latency/spark_1m")
+def api_two():
+    # 3 seconds batch interval
+    stmt = "SELECT testid, time1, delta FROM spark_1m"
+    response = session.execute(stmt)
+    tmp_point = []
+    for ping in response:
+        tmp_point.append([ping.time1,ping.delta])
+    return make_response(dumps(tmp_point))
+
+@app.route("/chart/latency/<topic>")
+@app.route("/chart/time")
+def chart_time(topic):
+    return render_template("line_chart.html")
+
+@app.route("/api/throughput/<test>/<topic>")
+def api_count(test, topic):
+    # http://de.katychuang.me:5000/api/count/input1/test_a_100000000
     # open topic_testId
     # count number of lines in the file
     return "count"
