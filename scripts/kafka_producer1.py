@@ -1,5 +1,5 @@
 import random
-import sys
+import sys, os
 import six
 from datetime import datetime
 from kafka.client import KafkaClient
@@ -13,9 +13,18 @@ class Producer(object):
 
     def open_save(self, fileName):
         log_file = open(fileName, "w")
+        log_file.close()
         return log_file
 
+    def create_topic(self, topic):
+        script = "/usr/local/kafka/bin/kafka-topics.sh"
+        os.system("{} --create --zookeeper localhost:2181 --topic {} --partitions {} --replication-factor 2".format(script, topic, "4"))
+        return "topic {} created".format(topic)
+
     def produce_msgs(self, source_symbol, topic):
+        server_topics = self.client.topic_partitions
+        if topic not in server_topics:
+          self.create_topic(topic)
         price_field = random.randint(800,1400)
         cities = ["Barcelona", "Philadelphia", "Honolulu",
                   "Atlanta", "Miami", "Chicago", "SF", "LA", "NYC",
@@ -33,10 +42,11 @@ class Producer(object):
                                           price_field)
             print message_info
             log_file.write("{}\n".format(message_info))
-#            self.producer.send_messages(topic, source_symbol, message_info)
+            self.producer.send_messages(topic, source_symbol, message_info)
             msg_cnt += 1
-            if msg_cnt > 10:
+            if msg_cnt > 200000:
                 log_file.close()
+                self.producer.stop()
                 break
 
 if __name__ == "__main__":
