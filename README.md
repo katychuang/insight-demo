@@ -14,10 +14,12 @@ Table of Contents:
 
 1. Introduction 
 2. Technologies
-3. REST API
-4. Operation
 
 ---
+# Introduction
+
+![](http://de.katychuang.me/static/preview.gif)
+
 # Technologies
 
 * AWS Platform
