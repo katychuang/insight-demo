@@ -23,6 +23,13 @@ Table of Contents:
 * AWS Platform
 * Ingestion
 	* Kafka
+* Streaming
+    * Spark Streaming
+    * Storm Trident
+* Datastore
+    * Cassandra
 * Front End
 	* [Flask](http://flask.pocoo.org/)
 	* [Cubism](http://square.github.io/cubism/)
+    * [LeafletJS](http://leafletjs.com)
+    * [Highcharts](http://highcharts.com)
