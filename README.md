@@ -7,13 +7,16 @@ Description:
 ---
  
 Project for Data Engineering Fellowship at Insight Data Science '15C
+
 ---
 
 Table of Contents:
 
 1. Introduction 
-2. REST API
-3. Operation
+2. Technologies
+3. REST API
+4. Operation
+
 ---
 # Technologies
 
