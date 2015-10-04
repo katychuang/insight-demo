@@ -9,6 +9,7 @@ from cassandra.cluster import Cluster
 from datetime import datetime
 import json
 from operator import itemgetter
+from pyzipcode import ZipCodeDatabase
 
 app = Flask(__name__)
 
@@ -20,23 +21,23 @@ session.default_timeout = 30 # 30 seconds
 
 @app.route("/")
 @app.route('/index')
-def hello():
-    return "Hello World!"
+def home():
+  return render_template("home.html")
 
 # create topic
 @app.route("/test/spark/create/<topic>/")
 def create_topic(topic):
     script = "/usr/local/kafka/bin/kafka-topics.sh"
     os.system("{} --create --zookeeper localhost:2181 --topic {} --partitions {} --replication-factor 2".format(script, topic, "4"))
-    # send confirmation
-    return "topic created"
+    return "topic {} created".format(topic)
 
 @app.route("/test/spark/produce/<topic>/")
-def start_test(topic):
+@app.route("/test/spark/stream/<topic>/")
+def start_spark_test(topic):
     # python test/a_producer.py `hostname` 1 test_a_11
-    script = "kafka_producer1.py"
+    kafka_script = "kafka_producer1.py"
     hostname = settings.MASTER_PUBLIC_IP
-    os.system("python {} {} {}".format(script, hostname, topic))
+    os.system("python {} {} 4 {}".format(kafka_script, hostname, topic))
 
 @app.route("/test/spark/consume/<topic>")
 def read_spark_stream(topic):
@@ -52,9 +53,55 @@ def test(id):
     return id
 
 @app.route("/demo")
-@app.route("/test")
+def x():
+    x = '<a href="http://de.katychuang.me:5000/chart/latency/spark_1m">spark latency</a>'
+    x += '<br>'
+    x += '<a href="http://de.katychuang.me:5000/map4">map</a>'
+    return x
+
+@app.route("/mockup")
 def create_test():
 	return render_template("demo.html")
+
+@app.route("/api/zip")
+def zip():
+    stmt = "SELECT shoeid, starttime, endtime, shoe, zipcode from justsoldonebay;"
+    response = session.execute(stmt)
+    j = []
+    zcdb = ZipCodeDatabase()
+    for dot in response:
+        z = {}
+        z["zip"] = dot.zipcode
+        z["id"] = dot.shoeid
+        z["shoe"] = dot.shoe
+        z["sold"] = dot.endtime
+        try:
+            zipcode = zcdb[dot.zipcode]
+            z["ll"] = [zipcode.longitude,zipcode.latitude]
+            z["city"] = zipcode.city
+            z["lat"] = zipcode.latitude
+            z["lon"] = zipcode.longitude
+        except:
+          pass
+        j.append(z)
+
+    return make_response(dumps(j))
+
+@app.route("/map1") #googlemaps
+def map1():
+    return render_template("map1.html")
+
+@app.route("/map2") #kartograph.js
+def map():
+    return render_template("map2.html")
+
+@app.route("/map3") #highmaps
+def map3():
+    return render_template("map3.html")
+
+@app.route("/map4") #highmaps
+def map4():
+    return render_template("map4.html")
 
 @app.route("/api/time/<topic>")
 def api_one(topic):

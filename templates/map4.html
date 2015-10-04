@@ -1,0 +1,76 @@
+<html>
+<head>
+  <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.css" />
+  <script src="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.js"></script>
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
+  <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+  <script src="{{ url_for('static', filename='js/SliderControl.js') }}"></script>
+<style>
+body {margin: 0; padding: 0;}
+#map { height: 100%; }
+</style>
+</head>
+<body>
+ <div id="map"></div>
+</body>
+<script>
+
+  var map = L.map('map').setView([40.7101, -84.0066], 4);
+      L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+          attribution: '&copy;',
+          maxZoom: 18
+      }).addTo(map);
+  
+  $.getJSON('/api/zip', function (data) {
+          var x = data.map(function(obj){ 
+            if ((typeof obj.lat != "undefined") && (typeof obj.lon != "undefined") ){
+              return [obj.shoe, [parseFloat(obj.lat), parseFloat(obj.lon)]];
+            }
+          });
+          x.forEach(function(item, index, array) {
+            if (typeof item != "undefined"){
+            if (typeof item[1] != "undefined") {
+
+              setTimeout(function () {
+                  if (item[0] == "JORDAN"){
+                    var jIcon = L.icon({
+                        iconUrl: '../static/img/Air-Jordan-Logo-psd2918.png',
+
+                        iconSize:     [25, 25], // size of the icon
+                        iconAnchor:   [2, 4], // point of the icon which will correspond to marker's location
+                        popupAnchor:  [-3, -76], // point from which the popup should open relative to the iconAnchor
+                        className: "auto_hide" 
+                    });
+                    L.marker(item[1], {icon: jIcon}).addTo(map);
+                  } else if (item[0] == "YEEZY"){
+                    console.log([ item[1], item[0]]);
+                    var yIcon = L.icon({
+                        iconUrl: '../static/img/redoctober_logo.png',
+                        iconSize:     [35, 25], // size of the icon
+                        iconAnchor:   [2, 4], // point of the icon which will correspond to marker's location
+                        popupAnchor:  [-3, -76], // point from which the popup should open relative to the iconAnchor
+                        className: "auto_hide" 
+                    });
+                    L.marker(item[1], {icon: yIcon}).addTo(map);
+
+                  } else {
+                    c = "blue"; f = '#30f';
+                    //console.log([c,f, item[1], item[0]]);
+                    L.circleMarker(item[1], 50, {
+                      color: c,
+                      fillColor: f,
+                      fillOpacity: 0.5,
+                      className: "auto_hide" 
+                    }).addTo(map);
+                  } //end else
+                }, t(100,900) * index); //timeout  
+             }} // check if item exists before adding marker
+          });
+        });
+
+function t(min, max) {
+  return Math.random() * (max - min) + min;
+}
+</script>
+</html>
