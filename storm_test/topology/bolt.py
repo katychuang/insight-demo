@@ -6,7 +6,7 @@ from pyleus.storm import SimpleBolt
 from datetime import datetime
 from cassandra.cluster import Cluster
 
-cluster = Cluster([''])
+cluster = Cluster(['54.164.65.18'])
 session = cluster.connect('spark_pond')
 session.default_timeout = 30 # 30 seconds
 

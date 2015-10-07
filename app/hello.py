@@ -39,14 +39,18 @@ def start_spark_test(topic):
     hostname = settings.MASTER_PUBLIC_IP
     os.system("python {} {} 4 {}".format(kafka_script, hostname, topic))
 
-@app.route("/test/spark/consume/<topic>")
-def read_spark_stream(topic):
- # spark-submit --packages org.apache.spark:spark-streaming-kafka_2.10:1.5.0 processing/spark_test.py
-    hostname = settings.MASTER_PUBLIC_IP 
-    script = "spark_stream.py"
-    os.system("python {} {} 1 {}".format(script, hostname, topic))
-    return "sent"
+    # spark-submit --packages org.apache.spark:spark-streaming-kafka_2.10:1.5.0 processing/spark_test.py
+    spark_script = "spark_stream.py"
+    package = "--packages org.apache.spark:spark-streaming-kafka_2.10:1.5.0"
+    os.system("spark-submit {} {} {} 1".format(package, spark_script, topic))
+    return redirect("http://de.katychuang.me:5000/latest", code=302)
 
+@app.route("/latest/<filename>")
+def latest(filename):
+    st = os.stat("input1/{}.csv".format(filename))
+    # TODO Make this show a form with a list of available topics/tests
+    context = {'data': st}
+    return render_template("latest.html", **context)
 
 @app.route("/test/<id>/")
 def test(id):
@@ -65,7 +69,7 @@ def create_test():
 
 @app.route("/api/zip")
 def zip():
-    stmt = "SELECT shoeid, starttime, endtime, shoe, zipcode from justsoldonebay;"
+    stmt = "SELECT shoeid, starttime, endtime, shoe, zipcode, price from justsoldonebay;"
     response = session.execute(stmt)
     j = []
     zcdb = ZipCodeDatabase()
@@ -75,6 +79,7 @@ def zip():
         z["id"] = dot.shoeid
         z["shoe"] = dot.shoe
         z["sold"] = dot.endtime
+        z["price"] = dot.price
         try:
             zipcode = zcdb[dot.zipcode]
             z["ll"] = [zipcode.longitude,zipcode.latitude]
@@ -87,21 +92,20 @@ def zip():
 
     return make_response(dumps(j))
 
-@app.route("/map1") #googlemaps
-def map1():
-    return render_template("map1.html")
 
-@app.route("/map2") #kartograph.js
-def map():
-    return render_template("map2.html")
-
-@app.route("/map3") #highmaps
-def map3():
-    return render_template("map3.html")
-
+@app.route("/jordan-v-yeezy")
 @app.route("/map4") #highmaps
 def map4():
     return render_template("map4.html")
+
+@app.route("/api/time/storm")
+def time_storm():
+  timestamps = []
+  f = open('storm_test/time1_test.txt', 'r')
+#  f.read()
+  for line in f:
+    timestamps.append(line[:-1])
+  return make_response(dumps(timestamps))
 
 @app.route("/api/time/<topic>")
 def api_one(topic):
@@ -128,6 +132,10 @@ def api_two():
         tmp_point.append([ping.time1,ping.delta])
     return make_response(dumps(tmp_point))
 
+@app.route("/chart/storm-v-spark")
+def chart_ss():
+  return render_template("charts.html")
+
 @app.route("/chart/latency/<topic>")
 @app.route("/chart/time")
 def chart_time(topic):
@@ -138,9 +146,8 @@ def api_count(test, topic):
     # http://de.katychuang.me:5000/api/count/input1/test_a_100000000
     # open topic_testId
     # count number of lines in the file
-    return "count"
-
-
+    # st = os.stat("input1/{}.csv".format(topic))
+    return  ""
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)
