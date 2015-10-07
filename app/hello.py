@@ -1,15 +1,16 @@
+from pyzipcode import ZipCodeDatabase
+from cassandra.cluster import Cluster
+
 from flask import Flask, render_template, jsonify, request, Response
 from flask import make_response
-from json import dumps
+
 import os
+import subprocess
+from datetime import datetime
+from operator import itemgetter
+
 import settings
 from settings import *
-import subprocess
-from cassandra.cluster import Cluster
-from datetime import datetime
-import json
-from operator import itemgetter
-from pyzipcode import ZipCodeDatabase
 
 app = Flask(__name__)
 
@@ -55,13 +56,6 @@ def latest(filename):
 @app.route("/test/<id>/")
 def test(id):
     return id
-
-@app.route("/demo")
-def x():
-    x = '<a href="http://de.katychuang.me:5000/chart/latency/spark_1m">spark latency</a>'
-    x += '<br>'
-    x += '<a href="http://de.katychuang.me:5000/map4">map</a>'
-    return x
 
 @app.route("/mockup")
 def create_test():
