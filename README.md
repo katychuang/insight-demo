@@ -27,24 +27,26 @@ Initially I wanted to work on a sneaker analytics related project, but then know
 
 * AWS Platform
 * Ingestion
-	* Kafka
+	* [Kafka](http://kafka.apache.org)
 * Streaming
-    * Spark Streaming
-    * Storm Trident
+    * [Spark Streaming](http://spark.apache.org)
+    * [Storm](http://storm.apache.org/)
 * Datastore
-    * Cassandra
+    * [Cassandra](http://cassandra.apache.org/)
 * Front End
 	* [Flask](http://flask.pocoo.org/)
 	* [Cubism](http://square.github.io/cubism/)
     * [LeafletJS](http://leafletjs.com)
     * [Highcharts](http://highcharts.com)
-* Open Source
-    * Pyleus
+* Open Source Drivers
+    * [Pyleus](https://github.com/Yelp/pyleus/)
     * PySpark
-    * Python-Driver
+    * [Python-Driver](https://github.com/datastax/python-driver) for Cassandra
 
 # Application
 
 Here's an example of using stream processing software to create a trendwatching dashboard
 
 ![](http://de.katychuang.me/static/preview.gif)
+
+Data comes from eBay API.
