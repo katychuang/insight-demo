@@ -1,0 +1,105 @@
+<html>
+<head>
+  <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.css" />
+  <script src="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.js"></script>
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
+  <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<style>
+body {margin: 0; padding: 0; font-family: 'Open Sans', sans-serif;}
+#map { height: 100%; }
+#avgJ { font-size: 22px; bottom: 80px; right: 30px; position: fixed;}
+#avgY { font-size: 22px; bottom: 40px; right: 30px; position: fixed;}
+#title {position:fixed; right:30px; top:40px; background: rgba(255, 255, 255, 0.9); 
+        padding: 0 10px;
+        border-radius: 4px;
+        border: 1px solid #ddd; }
+#title h1 { font-size: 20px; text-align: left;}
+#title p { font-size: 12px; }
+</style>
+</head>
+<body>
+ <div id="map"></div>
+ <div id="title">
+  <h1>YeezyScore</h1>
+  <p>Following collectible sneakers sold on eBay</p>
+  <p><a href="http://de.katychuang.me">More about this project</a></p>
+  <p>&copy; Kat Chuang, Data Engineering Fellow<br/>
+  Insight Data Science</p>
+ </div>
+ <div id="avgJ"><img src="{{ url_for('static', filename='img/Air-Jordan-Logo-psd2918.png') }}" width="25" /> <span>$0</span></div>
+ <div id="avgY"><img src="{{ url_for('static', filename='img/redoctober_logo.png') }}" width="25" /> <span>$0</span></div>
+</body>
+<script>
+1
+  var map = L.map('map').setView([40.7101, -84.0066], 4);
+      L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+          attribution: '&copy;',
+          maxZoom: 18
+      }).addTo(map);
+  
+  $.getJSON('/api/zip', function (data) {
+          var avgJ = 0.0; var totalJ = 0.0;
+          var avgY = 0.0; var totalY = 0.0;
+          var x = data.map(function(obj){ 
+            if ((typeof obj.lat != "undefined") && (typeof obj.lon != "undefined") ){
+              return [obj.shoe, [parseFloat(obj.lat), parseFloat(obj.lon)], obj.price];
+            }
+          });
+          var counterJ = 0; var counterY = 0;
+          x.forEach(function(item, index, array) {
+            if (typeof item != "undefined"){
+            if (typeof item[1] != "undefined") {
+
+              setTimeout(function () {
+                  if (item[0] == "JORDAN"){
+                    counterJ += 1;
+                    totalJ += parseFloat(item[2]); 
+                    var jIcon = L.icon({
+                        iconUrl: '../static/img/Air-Jordan-Logo-psd2918.png',
+
+                        iconSize:     [25, 25], // size of the icon
+                        iconAnchor:   [2, 4], // point of the icon which will correspond to marker's location
+                        popupAnchor:  [-3, -76], // point from which the popup should open relative to the iconAnchor
+                        className: "auto_hide" 
+                    });
+                    L.marker(item[1], {icon: jIcon}).addTo(map);
+                    avgJ = totalJ / counterJ;
+                    $('#avgJ span').html("$"+avgJ.toFixed(2));
+                  } else if (item[0] == "YEEZY"){
+                    console.log([ item[1], item[0], parseFloat(item[2].toFixed(2) )]);
+                    var yIcon = L.icon({
+                        iconUrl: '../static/img/redoctober_logo.png',
+                        iconSize:     [35, 25], // size of the icon
+                        iconAnchor:   [2, 4], // point of the icon which will correspond to marker's location
+                        popupAnchor:  [-3, -76], // point from which the popup should open relative to the iconAnchor
+                        className: "auto_hide" 
+                    });
+                    L.marker(item[1], {icon: yIcon}).addTo(map);
+                    totalY += parseFloat(item[2]); 
+                    counterY += 1;
+                    avgY = totalY / counterY;
+                    $('#avgY span').text("$"+avgY.toFixed(2));
+                  } else {
+                    /* Comment this out, don't need to clutter the map for demo
+                    c = "blue"; f = '#30f';
+                    //console.log([c,f, item[1], item[0]]);
+                    L.circleMarker(item[1], 50, {
+                      color: c,
+                      fillColor: f,
+                      fillOpacity: 0.5,
+                      className: "auto_hide" 
+                    }).addTo(map);
+                    */
+                  } //end else
+                }, t(100,900) * index * t(0.1, 0.4)); //timeout  
+             }} // check if item exists before adding marker
+          });
+        });
+
+function t(min, max) {
+  return Math.random() * (max - min) + min;
+}
+</script>
+</html>

@@ -24,8 +24,10 @@ class MyBolt(SimpleBolt):
         time1 = datetime.strptime(s[1], '%Y-%m-%d %H:%M:%S.%f')
         delta = time2 - time1
           
-        date = str(time2).split()[0], s[1].split(".")[0]
-        session.execute("INSERT INTO test1 (id, date, time1, location, shoe, time2) values ('storm1', %s, %s, 'NYC', %s, %s);", (date, str(delta.microseconds), datetime.strftime(time2,fmt)))
+        t1 = s[1].split(".")[0]
+        t2 = datetime.strftime(time2,fmt)
+        session.execute("INSERT INTO storm_1m (testid, time1, delta, time2) values ('storm1', %s, %s, %s);", 
+                        (s[1], delta.microseconds, str(time2)))
         log.debug("{} x {} >> {}\n".format(time2, shoe, len(shoe)))
         self.emit((str(time2),), anchors=[tup])
         

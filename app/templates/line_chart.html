@@ -1,0 +1,153 @@
+{% extends "layout.html" %}
+{% block content %}
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://code.highcharts.com/modules/exporting.js"></script>
+
+<div id="container" style="min-width: 310px; height: 600px; margin: 0 auto"></div>
+<div id="container2" style="min-width: 310px; height: 600px; margin: 0 auto"></div>
+
+<script>
+function t(min, max) {
+  return Math.random() * (max - (min * 0.8)) + min;
+}
+
+$(function () {
+    var st = []; var st2 = []
+    var temp = [];
+    var storm = $.getJSON('/api/time/storm_1m', function (data) {
+        for (i=0; i < 2000; i++){
+          z = new Date(data[0][0]).getTime();
+          time = new Date(data[i][0]).getTime();
+          delta = data[i][1];
+          st.push([time-z, delta]);
+          st2.push([time-z, i+1]);
+        } 
+      console.log("st"); 
+      console.log(st);
+
+    });
+
+    //console.log(storm);
+    $.getJSON('/api/time/spark_1m', function (data) {
+                    
+        var my_data = []; var my_data2 = []
+        for (i=0; i < 2000; i++){
+          ztime = new Date(data[0][0]).getTime();
+          time = new Date(data[i][0]).getTime();
+          delta = data[i][1];
+          my_data.push([time-ztime, delta]);
+          my_data2.push([time-ztime, i+1]);
+        } 
+        console.log(my_data);
+                
+        $('#container').highcharts({
+            chart: {
+                type: 'scatter',
+                zoomType: 'x'
+            },
+            title: {
+                text: 'Storm vs Spark Streaming Latency'
+            },
+            subtitle: {
+                text: document.ontouchstart === undefined ?
+                        'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+            },
+            xAxis: {
+                title: {
+                    enabled: true,
+                    text: 'microseconds'
+                },
+                startOnTick: false,
+                endOnTick: false,
+                showLastLabel: true
+            },
+            yAxis: {
+                title: {
+                    text: 'Latency'
+                }
+            },
+            legend: {
+                enabled: true
+            },
+            plotOptions: {
+                scatter: {
+                marker: {
+                    radius: 5,
+                    states: {
+                        hover: {
+                            enabled: true,
+                            lineColor: 'rgb(100,100,100)'
+                        }
+                    }
+                },
+              }
+            },
+
+            series: [{
+                name: 'Spark Streaming',
+                color: 'rgba(119, 152, 191, .5)',
+                data: my_data
+            }, {
+                name: 'Storm',
+                color: 'rgba(223, 83, 83, .5)', 
+                data: st
+            }]
+        });
+        $('#container2').highcharts({
+            chart: {
+                type: 'scatter',
+                zoomType: 'xy'
+            },
+            title: {
+                text: 'Throughput'
+            },
+            subtitle: {
+                text: document.ontouchstart === undefined ?
+                        'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+            },
+            xAxis: {
+                title: {
+                    enabled: true,
+                    text: 'microseconds'
+                },
+                startOnTick: false,
+                endOnTick: false,
+                showLastLabel: true
+            },
+            yAxis: {
+                title: {
+                    text: 'Throughput (aggregate)'
+                }
+            },
+            legend: {
+                enabled: true
+            },
+            plotOptions: {
+                scatter: {
+                marker: {
+                    radius: 5,
+                    states: {
+                        hover: {
+                            enabled: true,
+                            lineColor: 'rgb(100,100,100)'
+                        }
+                    }
+                },
+              }
+            },
+
+            series: [{
+                name: 'Spark Streaming',
+                color: 'rgba(119, 152, 191, .5)',
+                data: my_data2
+            }, {
+                name: 'Storm',
+                color: 'rgba(223, 83, 83, .5)', 
+                data: st2
+            }]
+        });
+
+  });
+});
+</script>
+{% endblock %}

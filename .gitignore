@@ -61,3 +61,5 @@ settings.py
 pip-selfcheck.json
 *.swp
 local*
+
+*.jar

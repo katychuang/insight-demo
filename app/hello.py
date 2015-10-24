@@ -8,6 +8,7 @@ import os
 import subprocess
 from datetime import datetime
 from operator import itemgetter
+from json import dumps
 
 import settings
 from settings import *
@@ -15,7 +16,7 @@ from settings import *
 app = Flask(__name__)
 
 # Connect to Cassandra
-cluster = Cluster(['54.164.65.18'])
+cluster = Cluster(['IP_ADDRESS'])
 session = cluster.connect('spark_pond')
 session.default_timeout = 30 # 30 seconds
 
