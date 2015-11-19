@@ -47,6 +47,6 @@ Initially I wanted to work on a sneaker analytics related project, but then know
 
 Here's an example of using stream processing software to create a trendwatching dashboard
 
-![](http://de.katychuang.me/static/preview.gif)
+![Preview](http://katychuang.com/insight/yeezyscore_preview.gif)
 
 Data comes from eBay API.
